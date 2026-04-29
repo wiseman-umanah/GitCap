@@ -30,6 +30,11 @@ dependencies = [
     "rich>=13.9.4",
 ]
 
+[project.urls]
+Homepage = "https://github.com/wiseman-umanah/GitCap.git"
+Repository = "https://github.com/wiseman-umanah/GitCap.git"
+
+
 [project.scripts]
 gitcap = "gitcap:main"
 
