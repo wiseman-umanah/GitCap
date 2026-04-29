@@ -17,7 +17,7 @@ APP_NAME: Final[str] = "gitcap"
 CONFIG_FILENAME: Final[str] = "config.pkl"
 
 DEFAULT_MODELS: Final[dict[str, str]] = {
-    "groq": "llama3-8b-8192",
+    "groq": "openai/gpt-oss-120b",
     "claude": "claude-3-haiku-20240307",
     "chatgpt": "gpt-4o-mini",
     "openrouter": "openai/gpt-4o-mini",

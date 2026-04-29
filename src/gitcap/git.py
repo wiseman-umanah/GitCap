@@ -9,6 +9,9 @@ from git import GitCommandError, InvalidGitRepositoryError, Repo
 from gitcap.errors import GitCapError
 
 
+MAX_DIFF_CHARS = 8_000
+
+
 def resolve_repo_path(path: str) -> Path:
     """Expand and resolve a user-provided repository path."""
     repo_path = Path(path).expanduser().resolve()
@@ -30,8 +33,8 @@ def open_repo(path: str) -> Repo:
         raise GitCapError(f"Not a valid git repository: {repo_path}") from exc
 
 
+
 def get_staged_diff(repo: Repo) -> str:
-    """Return the staged diff for a repository."""
     try:
         diff = repo.git.diff("--staged")
     except GitCommandError as exc:
@@ -39,6 +42,10 @@ def get_staged_diff(repo: Repo) -> str:
 
     if not diff.strip():
         raise GitCapError("Nothing staged. Run `git add .` first then try again.")
+
+    if len(diff) > MAX_DIFF_CHARS:
+        diff = diff[:MAX_DIFF_CHARS] + "\n\n... (diff truncated — stage fewer files for full analysis)"
+
     return diff
 
 

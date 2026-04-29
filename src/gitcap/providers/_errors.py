@@ -10,6 +10,8 @@ from gitcap.errors import GitCapError
 def provider_error(provider: str, exc: Exception) -> GitCapError:
     """Convert SDK exceptions into clear user-facing errors."""
     message = str(exc).lower()
+    print(f"DEBUG: Original error from {provider}: {exc}")  # Debug line
+    print(f"DEBUG: Error type: {type(exc)}")  # Debug line
     if "unauthorized" in message or "invalid api key" in message or "401" in message:
         return GitCapError(f"{provider} API key is invalid. Run `gitcap config --reset`.")
     if "rate limit" in message or "429" in message:
