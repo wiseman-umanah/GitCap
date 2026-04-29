@@ -7,6 +7,17 @@ authors = [
     { name = "wiseman-umanah", email = "wisemanumanah@gmail.com" }
 ]
 requires-python = ">=3.11,<3.14"
+keywords = ["git", "commit", "ai", "groq", "openai", "claude", "conventional-commits"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Environment :: Console",
+    "Topic :: Software Development :: Version Control :: Git",
+]
 dependencies = [
     "anthropic>=0.40.0",
     "gitpython>=3.1.43",
