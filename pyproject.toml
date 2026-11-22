@@ -1,13 +1,13 @@
 [project]
 name = "gitcap"
-version = "0.1.0"
-description = "AI-powered git commit message generator."
+version = "0.2.0"
+description = "Commit messages from the coding agent you are already logged in to (Claude Code, Codex, Gemini, Grok, ...) or Groq."
 readme = "README.md"
 authors = [
     { name = "wiseman-umanah", email = "wisemanumanah@gmail.com" }
 ]
 requires-python = ">=3.11,<3.14"
-keywords = ["git", "commit", "ai", "groq", "openai", "claude", "conventional-commits"]
+keywords = ["git", "commit", "ai", "groq", "claude-code", "codex", "gemini-cli", "grok", "conventional-commits"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
@@ -19,14 +19,7 @@ classifiers = [
     "Topic :: Software Development :: Version Control :: Git",
 ]
 dependencies = [
-    "anthropic>=0.40.0",
-    "gitpython>=3.1.43",
-    "groq>=0.11.0",
-    "openai>=1.55.0",
-    "platformdirs>=4.3.6",
-    "pyfiglet>=1.0.2",
     "readchar>=4.2.0",
-    "requests>=2.32.3",
     "rich>=13.9.4",
 ]
 
@@ -36,8 +29,26 @@ Repository = "https://github.com/wiseman-umanah/GitCap.git"
 
 
 [project.scripts]
-gitcap = "gitcap:main"
+gitcap = "gitcap.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.8.5,<0.9.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.8",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+
+[tool.ruff]
+line-length = 130
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B"]
+ignore = ["E501"]

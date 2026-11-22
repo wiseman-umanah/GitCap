@@ -1,81 +1,67 @@
-"""Interactive commit message review flow."""
+"""Interactive commit message review loop."""
 
 from __future__ import annotations
 
 import os
+import shlex
 import subprocess
 import tempfile
 from collections.abc import Callable
+from pathlib import Path
 
-import readchar
-from git import Repo
-from rich.console import Console
-from rich.panel import Panel
-
-from gitcap import git
+from gitcap import git, ui
 from gitcap.errors import GitCapError
-
-
-def show_message(console: Console, message: str) -> None:
-    """Display a generated commit message in a bordered panel."""
-    console.print(Panel(message, title="Generated commit message", border_style="cyan"))
+from gitcap.result import Generation
 
 
 def edit_message(message: str) -> str:
-    """Open the generated commit message in the user's editor."""
-    editor = os.environ.get("EDITOR") or os.environ.get("VISUAL") or "nano"
-    with tempfile.NamedTemporaryFile("w+", suffix=".txt") as handle:
-        handle.write(message)
-        handle.flush()
-        try:
-            subprocess.run([editor, handle.name], check=True)
-        except FileNotFoundError as exc:
-            raise GitCapError(f"Editor `{editor}` was not found. Set EDITOR and try again.") from exc
-        except subprocess.CalledProcessError as exc:
-            raise GitCapError("Editor closed with an error. Commit was aborted.") from exc
-        handle.seek(0)
-        edited = handle.read().strip()
+    """Open the message in $VISUAL/$EDITOR (falls back to git's configured editor)."""
+    editor = os.environ.get("VISUAL") or os.environ.get("EDITOR") or os.environ.get("GIT_EDITOR") or "vi"
+    with tempfile.NamedTemporaryFile("w", suffix=".gitcap-COMMIT_EDITMSG", delete=False) as handle:
+        handle.write(message + "\n")
+        path = Path(handle.name)
+    try:
+        subprocess.run([*shlex.split(editor), str(path)], check=True)
+        lines = [line for line in path.read_text().splitlines() if not line.startswith("#")]
+    except FileNotFoundError as exc:
+        raise GitCapError(f"Editor `{editor}` was not found. Set $EDITOR and try again.") from exc
+    except subprocess.CalledProcessError as exc:
+        raise GitCapError("Editor exited with an error. Nothing was committed.") from exc
+    finally:
+        path.unlink(missing_ok=True)
+    edited = "\n".join(lines).strip()
     if not edited:
-        raise GitCapError("Commit message cannot be empty.")
+        raise GitCapError("Commit message is empty. Nothing was committed.")
     return edited
 
 
-def read_action(console: Console) -> str:
-    """Read a single-key commit action."""
-    console.print("[bold][C][/bold]ommit  [bold][E][/bold]dit  [bold][R][/bold]egenerate  [bold][A][/bold]bort")
+def read_action() -> str:
+    import readchar
+
+    ui.print("[bold cyan]c[/bold cyan] commit  [bold cyan]e[/bold cyan] edit  [bold cyan]r[/bold cyan] regenerate  [bold cyan]q[/bold cyan] quit")
     while True:
         key = readchar.readkey().lower()
-        if key in {"c", "e", "r", "a"}:
+        if key in {"c", "\r", "\n"}:
+            return "c"
+        if key in {"e", "r"}:
             return key
+        if key in {"q", "a", readchar.key.ESC, readchar.key.CTRL_C}:
+            return "q"
 
 
-def review_message(
-    console: Console,
-    repo: Repo,
-    diff: str,
-    context: str,
-    generator: Callable[[str, str], str],
-    dry_run: bool = False,
-) -> None:
-    """Run the generated message review loop."""
-    message = generator(diff, context)
+def review(root: Path, generate: Callable[[], Generation], first: Generation) -> None:
+    generation = first
     while True:
-        show_message(console, message)
-        if dry_run:
-            console.print("[yellow]Dry run enabled. No commit was created.[/yellow]")
-            return
-
-        action = read_action(console)
+        ui.show_generation(generation)
+        action = read_action()
         if action == "c":
-            output = git.commit(repo, message)
-            console.print(f"[green]{output}[/green]")
+            ui.print(f"[green]✓[/green] {ui.escape(git.commit(root, generation.text))}")
             return
         if action == "e":
-            message = edit_message(message)
+            generation.text = edit_message(generation.text)
             continue
         if action == "r":
-            console.print("[dim]Regenerating...[/dim]")
-            message = generator(diff, context)
+            generation = generate()
             continue
-        console.print("[yellow]Aborted. No commit was created.[/yellow]")
+        ui.print("[yellow]Nothing was committed.[/yellow]")
         return
