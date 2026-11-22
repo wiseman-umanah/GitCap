@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>gitcap: commit messages from your own agent</title>
+  <meta name="description" content="gitcap writes Conventional Commit messages with the coding agent you're already logged in to: Claude Code, Codex, Gemini, Grok and more. No new API keys.">
+  <meta property="og:title" content="gitcap">
+  <meta property="og:description" content="Commit messages written by the coding agent you already pay for. No new API keys.">
+  <meta property="og:type" content="website">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23171512'/%3E%3Ctext x='6' y='22' font-family='monospace' font-size='16' fill='%23e8743b'%3E$%3C/text%3E%3Crect x='18' y='9' width='7' height='14' fill='%23f3eee4'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav__inner">
+      <a class="logo" href="#top" aria-label="gitcap home">gitcap<span class="logo__cursor" aria-hidden="true"></span></a>
+      <nav aria-label="Sections">
+        <ul class="nav__links">
+          <li><a href="#how">How it works</a></li>
+          <li><a href="#agents">Agents</a></li>
+          <li><a href="#commands">Commands</a></li>
+          <li><a href="#changelog">Changelog</a></li>
+        </ul>
+      </nav>
+      <div class="nav__end">
+        <button class="theme" type="button" aria-label="Switch colour theme" title="Switch colour theme">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg>
+        </button>
+        <a class="nav__gh" href="https://github.com/wiseman-umanah/GitCap">GitHub</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="wrap hero__grid">
+        <div class="hero__copy">
+          <p class="eyebrow"><span class="dot" aria-hidden="true"></span> <span data-version>open source</span> · MIT</p>
+          <h1>Commit messages, written by the agent you already&nbsp;pay&nbsp;for.</h1>
+          <p class="lede">
+            gitcap hands your staged diff to Claude Code, Codex, Gemini, Grok, or whichever coding agent
+            you're logged in to, and gives you back a clean Conventional Commit. No new API keys. When one
+            agent's plan runs out, the next one takes over.
+          </p>
+
+          <div class="install" data-tabs>
+            <div class="install__tabs" role="tablist" aria-label="Install with">
+              <button role="tab" aria-selected="true" data-cmd="uv tool install gitcap">uv</button>
+              <button role="tab" aria-selected="false" data-cmd="pipx install gitcap">pipx</button>
+              <button role="tab" aria-selected="false" data-cmd="pip install gitcap">pip</button>
+            </div>
+            <div class="install__box">
+              <code><span class="prompt" aria-hidden="true">$</span> <span data-install>uv tool install gitcap</span></code>
+              <button class="copy" type="button" data-copy-from="[data-install]">Copy</button>
+            </div>
+          </div>
+          <p class="hero__then">then stage something and run <code>gitcap commit</code></p>
+        </div>
+
+        <figure class="term" aria-label="Example gitcap session">
+          <div class="term__bar">
+            <span></span><span></span><span></span>
+            <p>~/projects/calc</p>
+            <button class="term__replay" type="button" aria-label="Replay the demo">replay</button>
+          </div>
+          <pre class="term__body" data-term aria-live="off"></pre>
+          <noscript>
+            <pre class="term__body">$ gitcap commit
+↷ Qoder CLI failed: credit usage limit (skipping it for 6h) — trying next
+
+  feat(calc): add sub()
+
+  claude · claude-haiku-5-5 · 4.1s   1.5k in · 40 out · $0.0003
+c commit  e edit  r regenerate  q quit
+✓ [main 4f2a91c] feat(calc): add sub()</pre>
+          </noscript>
+        </figure>
+      </div>
+    </section>
+
+    <section class="band" id="how">
+      <div class="wrap">
+        <h2 class="section-title"><span class="hash">a1f3e9c</span> How it works</h2>
+        <ol class="steps">
+          <li>
+            <h3>It finds your agents</h3>
+            <p>
+              gitcap reads only what's already on your machine: agent programs on your <code>PATH</code>,
+              their login files, and how recently their session logs changed. The agent you used last goes first.
+              It never opens your tokens.
+            </p>
+          </li>
+          <li>
+            <h3>Your agent writes the message</h3>
+            <p>
+              The agent runs once, in its non-interactive mode, inside an empty temporary folder with its
+              tools switched off, so it can't read or change your repo. You review it:
+              <kbd>c</kbd> commit, <kbd>e</kbd> edit, <kbd>r</kbd> regenerate.
+            </p>
+          </li>
+          <li>
+            <h3>The next one takes over</h3>
+            <p>
+              Plan expired, credits gone, logged out? gitcap moves to your next agent, then a local model,
+              then Groq's free API. An agent that failed waits at the back of the line until it works again.
+              gitcap only gives up when there's nothing left to try.
+            </p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="agents">
+      <div class="wrap">
+        <h2 class="section-title"><span class="hash">7c04b2d</span> Works with what you have</h2>
+        <p class="section-lede">Every agent below runs on your own subscription or login. API keys in your environment work too.</p>
+        <ul class="agents">
+          <li><strong>Claude Code</strong><code>claude -p</code><span>Defaults to Haiku: fast and cheap</span></li>
+          <li><strong>Codex</strong><code>codex exec</code><span>Read-only sandbox</span></li>
+          <li><strong>Gemini CLI</strong><code>gemini -p</code><span>Google login or API key</span></li>
+          <li><strong>Grok CLI</strong><code>grok -p</code><span>Tools and subagents off</span></li>
+          <li><strong>Kimi Code</strong><code>kimi --quiet -p</code><span>Moonshot login or API key</span></li>
+          <li><strong>Qoder CLI</strong><code>qodercli -p</code><span>Tools off</span></li>
+          <li><strong>Cursor Agent</strong><code>cursor-agent -p</code><span>Cursor login</span></li>
+          <li><strong>Copilot CLI</strong><code>copilot -p</code><span>GitHub login</span></li>
+          <li><strong>OpenCode · Crush</strong><code>opencode run · crush run</code><span>Your configured provider</span></li>
+          <li class="agents--alt"><strong>Local models</strong><code>Ollama · LM Studio · llama.cpp</code><span>Private, free, sized to the model's context</span></li>
+          <li class="agents--alt"><strong>Groq</strong><code>free API key</code><span>The last resort when nothing else is available</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="wrap">
+        <h2 class="section-title"><span class="hash">e52d81a</span> Small things that add up</h2>
+        <dl class="facts">
+          <div><dt>You see what it cost</dt><dd>Every message shows the agent, the model, how long it took, and the exact token counts and cost the agent reported.</dd></div>
+          <div><dt>Big diffs still fit</dt><dd>The diff is trimmed separately for each backend. Every file keeps its header, lockfiles are left out, and when a backend says the prompt is too large, gitcap shrinks it and retries.</dd></div>
+          <div><dt>Fast to start</dt><dd>No AI SDKs to load: two small dependencies. A check for updates runs in the background and never slows a command down.</dd></div>
+          <div><dt>Matches your history</dt><dd>Recent commit subjects go into the prompt, so new messages follow the scopes and style your repo already uses.</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section id="commands">
+      <div class="wrap">
+        <h2 class="section-title"><span class="hash">0b9e6f4</span> Commands</h2>
+        <div class="table-scroll">
+          <table class="cmds">
+            <tbody>
+              <tr><td><code>gitcap commit</code></td><td>Write a message for staged changes, review it, commit. Works from any folder in the repo.</td></tr>
+              <tr><td><code>gitcap commit -n</code></td><td>Dry run: print the message only.</td></tr>
+              <tr><td><code>gitcap commit -y</code></td><td>Commit without reviewing.</td></tr>
+              <tr><td><code>gitcap commit -c "hotfix for login"</code></td><td>Give the agent extra context.</td></tr>
+              <tr><td><code>gitcap commit -a grok</code></td><td>Use only this agent, this once.</td></tr>
+              <tr><td><code>gitcap agents</code></td><td>Your agents, in the order they'll be tried, with any that are paused and why.</td></tr>
+              <tr><td><code>gitcap agents --retry</code></td><td>Give paused agents another chance right away.</td></tr>
+              <tr><td><code>gitcap config --agent claude</code></td><td>Try this agent first; the rest stay as fallback.</td></tr>
+              <tr><td><code>gitcap config --groq-key gsk_…</code></td><td>Add Groq's free API as a last resort.</td></tr>
+              <tr><td><code>gitcap upgrade</code></td><td>Update to the latest release (uv tool, pipx or pip).</td></tr>
+              <tr><td><code>gitcap uninstall</code></td><td>Remove gitcap, its settings and caches.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="changelog">
+      <div class="wrap">
+        <h2 class="section-title"><span class="hash">HEAD</span> Changelog</h2>
+        <p class="section-lede">Read straight from <a href="https://github.com/wiseman-umanah/GitCap/blob/master/CHANGELOG.md"><code>CHANGELOG.md</code></a>, so this always matches the latest release.</p>
+        <div class="changelog" data-changelog aria-busy="true">
+          <p class="changelog__status">Loading the changelog…</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap foot__inner">
+      <p><span class="logo logo--small">gitcap</span> · MIT licensed</p>
+      <ul>
+        <li><a href="https://github.com/wiseman-umanah/GitCap">GitHub</a></li>
+        <li><a href="https://pypi.org/project/gitcap/">PyPI</a></li>
+        <li><a href="https://github.com/wiseman-umanah/GitCap/issues">Report an issue</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="changelog.js" defer></script>
+  <script src="app.js" defer></script>
+</body>
+</html>
